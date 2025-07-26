@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { Loading } from "./loading";
 import { Error } from "./Error";
-import "./Pokemons.css";
+import "./style.css";
 import { Card } from "./Card";
-// import { Header } from "./Header";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
+import { CardList } from "./cardList";
 
 export const PokemonCards = () => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // search term state
   const [searchTerm, setSearchTerm] = useState("");
 
   //  pagination
@@ -16,6 +20,7 @@ export const PokemonCards = () => {
   const cardsPerPage = 25; // or any number you want per page
   const [totalPages, setTotalPages] = useState(0);
 
+  // API URL with pagination
   const API = `https://pokeapi.co/api/v2/pokemon?offset=${
     cardsPerPage * currentPage
   }&limit=${cardsPerPage}`;
@@ -61,56 +66,17 @@ export const PokemonCards = () => {
     return pokemon.name.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  console.log("Filtered Pokemons: ", filterPokemonsData);
   return (
     <>
-      <div className="header">
-        <h1>Pokemon cards</h1>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault;
-          }}
-        >
-          <input
-            type="text"
-            placeholder="search pokemon..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button type="submit">Search</button>
-        </form>
-      </div>
-      <div className="pokemon-list-container">
-        <ul className="pokemon-list">
-          {filterPokemonsData.length > 0 ? (
-            filterPokemonsData.map((pokemon, index) => (
-              <Card key={index} pokemon={pokemon} />
-            ))
-          ) : (
-            <img
-              src="/—Pngtree—site 404 error page_3407766.png"
-              alt="Data not found"
-              className="not-found-image"
-            />
-          )}
-        </ul>
-      </div>
-      <div className="footer">
-        <div className="pagination">
-          <button onClick={() => pageHandler(-1)} disabled={currentPage <= 0}>
-            {"<< Prev"}
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => pageHandler(+1)}
-            disabled={currentPage >= totalPages}
-          >
-            {"Next >>"}
-          </button>
-        </div>
-      </div>
+      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+      <CardList filterPokemonsData={filterPokemonsData} />
+
+      <Footer
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageHandler={pageHandler}
+      />
     </>
   );
 };
